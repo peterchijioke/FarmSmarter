@@ -77,3 +77,33 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+### INSTRUCTION
+Instructions:
+Starting from a blank React Native app, use the react-native-maps package, import google maps sdk or an open
+source mapping tool of your choice as a maps provider. Make use of accessing the device location service and render
+four buttons, start, stop, reset and save.
+Start would trigger the recording your current location and drawing out a path that you travel.
+Stop would ultimately stop the service and the map will show the path travelled.
+Reset will clear the path drawn on the map.
+Save will send the path geo coordinates to the server.
+Requirements:
+This simple application should allow the user to map a route of their choice. Make sure that you select a custom
+location setting, not street map as most of these routes can be off-road. This mapping functionality should work
+offline too, in this case, the map line will be drawn, and the coordinates be saved locally until server connection
+enables syncing to the server itself.
+For this test task, don’t worry about deleting routes from the server, editing routes on the map or any customisation.
+The outcome should be a one-page app with the map and buttons. Make sure the accuracy of the map is set to highest.
+Setup:
+Use an IDE of your choice, I assume most will use VSCode to write the react native code. For the server, use any open
+software database, preferably noSql. Some options are Firebase Cloud Firestore or Mongo Atlas. No subscriptions are
+required for this. Also, don’t worry too much about the setting up of the database, all that is necessary for now is a
+Geopoint field with string data or latlng data (also string metadata).
+For offline functionality, you are free to implement the approach you deem is best. Some examples include Realm,
+SQLite or Cache the coordinates locally on the device in app or page state.
+Evaluation:
+A successful task will show this one-page application working seamlessly in online and offline modes. The map will
+have a high degree of accuracy and the buttons work as expected. Design will not be assessed, usability and working
+functionality are the priority.
+No additional resources are needed.
