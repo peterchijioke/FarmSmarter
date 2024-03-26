@@ -4,7 +4,6 @@ import {
   PermissionStatus,
   Platform,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import MapView, {
@@ -16,7 +15,7 @@ import MapView, {
 import {useSelector} from 'react-redux';
 import {request, PERMISSIONS} from 'react-native-permissions';
 import {RootState} from '../app/store';
-import {saveInitialRegion} from '../helpes/services';
+import {saveInitialRegion, switchOnLocation} from '../helpes/services';
 
 export default () => {
   const [showMap, setShowMap] = useState(false);
@@ -64,80 +63,52 @@ export default () => {
         .start();
     }
   };
-  const getMapRegion = () => ({
-    ...initialRegion,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121,
-  });
-
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      try {
-        let permission: any;
-        if (Platform.OS === 'android') {
-          permission = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
-        } else if (Platform.OS === 'ios') {
-          permission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
-        }
-
-        const granted = await request(permission);
-
-        if (granted === 'granted') {
-          // checkLocationSettings();
-          saveInitialRegion();
-        } else {
-          console.log('Location permission denied');
-          setShowMap(false);
-        }
-      } catch (err) {
-        console.warn(err);
-      }
+  const getMapRegion = () => {
+    return {
+      ...initialRegion,
+      latitudeDelta: 0.015,
+      longitudeDelta: 0.0121,
     };
-
-    requestLocationPermission();
-  }, []);
+  };
 
   return (
-    <>
-      {showMap ? (
-        
-      ) : (
-        <MapView.Animated
-          ref={mapRef}
-          onLayout={onMapLayout}
-          provider={Platform.select({
-            android: PROVIDER_GOOGLE,
-            ios: undefined,
-          })}
+    <MapView.Animated
+      ref={mapRef}
+      onLayout={onMapLayout}
+      provider={Platform.select({
+        android: PROVIDER_GOOGLE,
+        ios: undefined,
+      })}
+      style={{
+        ...StyleSheet.absoluteFillObject,
+      }}
+      region={getMapRegion()}>
+      {pathsCoordinates !== null &&
+        Array.isArray(pathsCoordinates) &&
+        pathsCoordinates.length > 0 && (
+          <Polyline
+            coordinates={pathsCoordinates}
+            strokeColor="maroon"
+            strokeWidth={4}
+          />
+        )}
+      <Marker.Animated
+        ref={animatedMarker}
+        coordinate={animatedRegion}
+        title="Initial Location"
+        description="Initial Location ">
+        <View
           style={{
-            ...StyleSheet.absoluteFillObject,
+            width: 20,
+            height: 20,
+            borderRadius: 50,
+            backgroundColor: 'maroon',
           }}
-          region={getMapRegion()}>
-          {pathsCoordinates !== null &&
-            Array.isArray(pathsCoordinates) &&
-            pathsCoordinates.length > 0 && (
-              <Polyline
-                coordinates={pathsCoordinates}
-                strokeColor="maroon"
-                strokeWidth={4}
-              />
-            )}
-          <Marker.Animated
-            ref={animatedMarker}
-            coordinate={animatedRegion}
-            title="Initial Location"
-            description="Initial Location ">
-            <View
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 50,
-                backgroundColor: 'maroon',
-              }}
-            />
-          </Marker.Animated>
-        </MapView.Animated>
-      )}
-    </>
+        />
+      </Marker.Animated>
+    </MapView.Animated>
   );
 };
+function checkLocationSettings() {
+  throw new Error('Function not implemented.');
+}

@@ -1,9 +1,11 @@
 import Geolocation from "@react-native-community/geolocation";
 import { Linking, Platform} from "react-native";
 import { store } from "../app/store";
+import { fetch } from "@react-native-community/netinfo";
 import { setData, setInitialRegion, setMountTimer, setRegion, setWatchId } from "../app/app.reducer";
 import { supabase } from "../../supabase/Supabase";
 import { Toast } from "react-native-toast-notifications";
+import { openSettings } from "react-native-permissions";
 
 export const handleStart=async ()=>{
   store.dispatch(setMountTimer(true))
@@ -45,6 +47,7 @@ await store.dispatch(setInitialRegion({
     },
     (    error: any)=>{
       console.log(error)
+       switchOnLocation();
     },{
         enableHighAccuracy: true,
     }
@@ -57,10 +60,9 @@ await store.dispatch(setInitialRegion({
 // =====================handleStop====================
 export const handleStop=async()=>{
   console.log('stop')
-
  try {
   store.dispatch(setMountTimer(false))
-  // Geolocation.clearWatch(store.getState().app.watchId);
+  Geolocation.clearWatch(store.getState().app.watchId);
   Geolocation.stopObserving()
  showToast('Navigation was stopped','success')
  } catch (error) {
@@ -71,11 +73,20 @@ export const handleStop=async()=>{
 
 // ============================handleReset=================
 export const handleReset=async ()=>{
+
+
+
+
+
    showToast('Navigation was reset to default','success')
     await store.dispatch(setData(0))
 }
 export const handleSave=async()=>{
- showToast('Coordinate was saved successfully','success')
+await fetch().then(state => {
+    console.log("Is connected?", state.isConnected);
+  const sendData=async()=>{
+  if(state.isConnected){
+  showToast('Coordinate was saved successfully','success')
   const coordinates = store.getState().app?.data?.map((item:any,i:number)=>(
      {
       name:`${new Date().getTime()}`,
@@ -98,21 +109,25 @@ return
 } catch (error:any) {
   console.log(error.message)
 }
+  }else{
+    showToast("Not connected to the internet","warning")
+  }
+  }
+  sendData()
+
+});
+
+
+ 
 
 }
 
  export const switchOnLocation = () => {
-    if (Platform.OS === 'android') {
-      Linking.openSettings();
-    } else if (Platform.OS === 'ios') {
-      Linking.openURL('app-settings:');
-    }
+    showToast("Switch on your location",'success')
+    openSettings().catch(() => console.warn('cannot open settings'));
   };
-
-
-
 export const showToast =(text:string,type:string)=> Toast.show(text,{
-  type: "success ",
+  type: type,
   duration: 4000,
   animationType: "zoom-in",
 });
