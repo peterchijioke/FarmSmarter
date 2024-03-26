@@ -6,9 +6,6 @@ import AppMap from '../components/AppMap';
 import {handleStart, saveInitialRegion} from '../helpes/services';
 
 export default () => {
-  useEffect(() => {
-    saveInitialRegion();
-  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.mapWrapper}>

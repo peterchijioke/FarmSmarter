@@ -1,5 +1,5 @@
 import Geolocation from "@react-native-community/geolocation";
-import { Platform} from "react-native";
+import { Linking, Platform} from "react-native";
 import { store } from "../app/store";
 import { setData, setInitialRegion, setMountTimer, setRegion, setWatchId } from "../app/app.reducer";
 import { supabase } from "../../supabase/Supabase";
@@ -100,6 +100,15 @@ return
 }
 
 }
+
+ export const switchOnLocation = () => {
+    if (Platform.OS === 'android') {
+      Linking.openSettings();
+    } else if (Platform.OS === 'ios') {
+      Linking.openURL('app-settings:');
+    }
+  };
+
 
 
 export const showToast =(text:string,type:string)=> Toast.show(text,{
